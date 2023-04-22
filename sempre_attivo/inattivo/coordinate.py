@@ -17,13 +17,13 @@ class MouseCoordinate:
         """
         Restituisce il path corrente del file delle coordinate
         """
-        return os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\"), nome_movimento +"_"+ self.nomeFileCoordinate)
+        return os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\coordinate\\"), nome_movimento +"_"+ self.nomeFileCoordinate)
 
     def path_file_velocita(self, nome_movimento):
         """
         Restituisce il path corrente del file delle velocità
         """
-        return os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\"), nome_movimento +"_"+ self.nomeFileVelocita)
+        return os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\velocita\\"), nome_movimento +"_"+ self.nomeFileVelocita)
         
     def get_coordinates_and_velocities(self):
         """

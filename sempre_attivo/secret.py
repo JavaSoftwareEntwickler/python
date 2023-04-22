@@ -1,7 +1,7 @@
 import sys
 import os
 from inattivo.coordinate import MouseCoordinate
-from inattivo.moviment_file_handler import MovementFileHandler
+from inattivo.movement_name_file_handler import MovementNameFileHandler
 
 import math
 import tkinter as tk
@@ -53,10 +53,10 @@ class App(tk.Tk):
         # Esegue il ciclo principale del programma
         nome_movimento = input("scrivi il nome che indentifica il movimento del mouse che farai : ")
         # Gestisce il file con i nomi dei movimenti
-        movement_file_handler = MovementFileHandler("nome_movimenti_mouse.txt")
-        while not movement_file_handler.check_movement_name(nome_movimento):
+        movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
+        while not movement.check_movement_name(nome_movimento):
             nome_movimento = input("Il nome del movimento è già presente nel file! Scrivi un altro nome: ")
-        movement_file_handler.add_movement_name(nome_movimento)
+        movement.add_movement_name(nome_movimento)
 
         #passi il nome del movimento
         mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", nome_movimento)

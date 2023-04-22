@@ -1,6 +1,6 @@
 import os
 
-class MovementFileHandler:
+class MovementNameFileHandler:
     def __init__(self, filename_):
         self.filename = os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\"), filename_)
 
