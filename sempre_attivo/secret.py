@@ -18,15 +18,27 @@ class App(tk.Tk):
         sys.path.append(path_attuale)
         # Inizializzazione della finestra grafica
         self.title("Start/Stop Program")
-        self.geometry("200x150")
+        self.geometry("220x150")
         
         # Creazione dei pulsanti e loro disposizione
         self.btn_start = tk.Button(self, text="Start", command=self.start)
-        self.btn_start.pack(pady=10)
+        #self.btn_start.pack(pady=10)
+        self.btn_start.place(x=10, y=10)
+        
         self.btn_stop = tk.Button(self, text="Stop", command=self.stop, state=tk.DISABLED)
-        self.btn_stop.pack(pady=10)
+        #self.btn_stop.pack(pady=10)
+        self.btn_stop.place(x=60, y=10)
+        
+        self.btn_read_movement = tk.Button(self, text="Leggi movimento", command=self.read_movement)
+        self.btn_read_movement.place(x=10, y=50)
+        
+
         # self.btn_random = tk.Button(self, text="Random Move", command=self.move_random, state=tk.DISABLED)
         # self.btn_random.pack(pady=10)
+        self.variable = tk.StringVar(self)
+        self.variable.set("Seleziona movimento")
+        self.drop_down = tk.OptionMenu(self, self.variable, *self.get_movement_names())
+        self.drop_down.place(x=10, y=90)
         
         # Inizializzazione delle variabili di stato
         self.is_running = False
@@ -42,6 +54,7 @@ class App(tk.Tk):
         self.btn_start.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
         # self.btn_random.config(state=tk.NORMAL)
+        self.btn_read_movement.config(state=tk.DISABLED)        
         self.mouse_listener = mouse.Listener(on_move=self.on_move)
         self.keyboard_listener = keyboard.Listener(on_press=self.on_press)
         self.mouse_listener.start()
@@ -57,7 +70,8 @@ class App(tk.Tk):
         fm.create_coordinate_velocita_folders()
         fm.create_name_movements_file()
         fm.add_current_folder_to_path()
-
+        
+        nome_movimento = self.variable.get()
         
         movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
         while True:       
@@ -153,6 +167,13 @@ class App(tk.Tk):
             if self.is_movement_user_paused:
                 break
             pyautogui.moveTo(x, y, duration = velocita[i] / 100)
+            
+    def read_movement(self):
+        pass
+    
+    def get_movement_names(self):
+        nomi_movimenti = ["cerchi","infinito"]
+        return nomi_movimenti
 
        
 if __name__ == '__main__':
