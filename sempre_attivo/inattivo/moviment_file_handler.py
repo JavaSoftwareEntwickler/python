@@ -1,8 +1,8 @@
 import os
 
 class MovementFileHandler:
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, filename_):
+        self.filename = os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\"), filename_)
 
     def check_movement_name(self, movement_name):
         # Verifica se il file esiste
