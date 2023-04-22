@@ -2,7 +2,7 @@ import sys
 import os
 from inattivo.coordinate import MouseCoordinate
 from inattivo.movement_name_file_handler import MovementNameFileHandler
-
+from inattivo.file_manager import FileManager
 import math
 import tkinter as tk
 import threading
@@ -50,13 +50,34 @@ class App(tk.Tk):
         self.thread.start()
 
     def run(self):
+        
         # Esegue il ciclo principale del programma
-        nome_movimento = input("scrivi il nome che indentifica il movimento del mouse che farai : ")
-        # Gestisce il file con i nomi dei movimenti
+        fm = FileManager()
+        fm.create_assets_folder()
+        fm.create_coordinate_velocita_folders()
+        fm.create_name_movements_file()
+        fm.add_current_folder_to_path()
+
+        
         movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
-        while not movement.check_movement_name(nome_movimento):
-            nome_movimento = input("Il nome del movimento è già presente nel file! Scrivi un altro nome: ")
-        movement.add_movement_name(nome_movimento)
+        while True:       
+            nome_movimento = input("Inserisci il nome del movimento: ")
+            if movement.is_movement_name_available(nome_movimento):
+                movement.add_movement_name(nome_movimento)
+                break
+            else:
+                print("Il nome del movimento è già presente nel file. Riprova.")
+                
+        # nome_movimento = input("scrivi il nome che indentifica il movimento del mouse che farai : ")
+        # # Gestisce il file con i nomi dei movimenti
+        # movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
+        # while not movement.is_movement_name_available(nome_movimento):
+            # nome_movimento = input("Il nome del movimento è già presente nel file! Scrivi un altro nome: ")
+        # movement.add_movement_name(nome_movimento)
+        
+
+
+        
 
         #passi il nome del movimento
         mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", nome_movimento)
