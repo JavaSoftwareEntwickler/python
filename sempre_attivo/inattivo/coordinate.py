@@ -2,24 +2,24 @@ from pynput import mouse
 import time
 import os
 
-class MouseCoordinates:
+class MouseCoordinate:
 
 
-    def __init__(self, duration, nomeFileCoordinate, nomeFileVelocita):
+    def __init__(self, duration, nomeFileCoordinate, nomeFileVelocita, nome_movimento):
         self.duration = duration
         self.nomeFileCoordinate = nomeFileCoordinate
         self.nomeFileVelocita = nomeFileVelocita
-        self.coordinate_path = self.path_file_coordinate()
-        self.velocita_path = self.path_file_velocita()
+        self.coordinate_path = self.path_file_coordinate(nome_movimento)
+        self.velocita_path = self.path_file_velocita(nome_movimento)
         print(f'ecco il path coordinate: {self.coordinate_path}e il path delle velocita: {self.velocita_path}####')
     
-    def path_file_coordinate(self):
+    def path_file_coordinate(self, nome_movimento):
         """
         Restituisce il path corrente del file delle coordinate
         """
         return os.path.join((os.path.abspath(os.getcwd()) + "\\assets\\"), self.nomeFileCoordinate)
 
-    def path_file_velocita(self):
+    def path_file_velocita(self, nome_movimento):
         """
         Restituisce il path corrente del file delle velocità
         """
@@ -59,7 +59,8 @@ class MouseCoordinates:
 
     def save_velocities(self, velocities):
         """
-        Salva le velocità in un file di testo con il percorso specificato.
+        Salva le velocità in un file di testo con il percorso specificato 
+        e restituisc la lunghezza della lista
         """
         with open(self.velocita_path, "w") as f:
          for timestamp, x, y in velocities:

@@ -1,6 +1,6 @@
 import sys
 import os
-from inattivo.coordinate import MouseCoordinates
+from inattivo.coordinate import MouseCoordinate
 import math
 import tkinter as tk
 import threading
@@ -49,8 +49,9 @@ class App(tk.Tk):
 
     def run(self):
         # Esegue il ciclo principale del programma
-        mc = MouseCoordinates(10, "coordinate.txt", "velocita.txt")
+        mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", "")
         coordinates, velocities = mc.get_coordinates_and_velocities()
+        
         quantita_coordinate = mc.save_coordinates(coordinates)
         quantita_velocita = mc.save_velocities(velocities)
         mc.check_files(quantita_coordinate, quantita_velocita)
