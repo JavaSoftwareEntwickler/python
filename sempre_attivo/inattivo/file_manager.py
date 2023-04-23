@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 
 class FileManager:
     def __init__(self):
@@ -25,3 +26,13 @@ class FileManager:
 
     def add_current_folder_to_path(self):
         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    
+    def clean__pycache__only_for_develop(self):
+        cartella = 'C:\\Users\\march\\OneDrive\\Desktop\\script_python\\sempre_attivo\\inattivo\\__pycache__\\'
+        # Cancella tutto nella cartella
+        shutil.rmtree(cartella)
+
+
+
+
+
