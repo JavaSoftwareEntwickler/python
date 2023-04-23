@@ -203,7 +203,8 @@ class App(tk.Tk):
             
     
     def get_movement_names(self):
-        nomi_movimenti = ["cerchi","infinito","veloce","ciccio","provaasdf","aaaaa","compila","okok","iooo","nuovomovimento","elisse","11112222","1234567","ioooooooooooooooo"]
+        #leggo il file
+        nomi_movimenti = ["cerchi","infinito"]
         return nomi_movimenti
 
        
