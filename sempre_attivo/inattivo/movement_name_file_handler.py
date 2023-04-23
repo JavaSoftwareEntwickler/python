@@ -17,6 +17,4 @@ class MovementNameFileHandler:
         # Aggiunge il nome del movimento al file
         with open(self.filename, 'a+') as f:
             f.write(movement_name + '\n')
-        print("Il nome del movimento è stato aggiunto al file!")
-    
 

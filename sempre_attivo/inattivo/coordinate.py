@@ -12,7 +12,6 @@ class MouseCoordinate:
         self.coordinate_path = self.path_file_coordinate(nome_movimento)
         self.velocita_path = self.path_file_velocita(nome_movimento)
         self.nome_movimento = nome_movimento
-        print(f'ecco il path coordinate: {self.coordinate_path}e il path delle velocita: {self.velocita_path}####')
     
     def get_path_file_coordinate(self):
         return self.path_file_coordinate(self.nome_movimento)
@@ -50,7 +49,6 @@ class MouseCoordinate:
                 pass
 
         listener.stop()
-
         return coordinates, velocities
 
 
@@ -61,7 +59,6 @@ class MouseCoordinate:
         velocita_file = self.get_path_file_velocita()
         with open(coordinate_file, "r") as file:
             coordinate = [tuple(map(float, c.strip().split(','))) for c in file.readlines()]
-        print(coordinate)
         file.close
         file2=open(velocita_file,"r")
         velocita = [line.strip() for line in file2.readlines()]
@@ -76,7 +73,6 @@ class MouseCoordinate:
             for x, y in coordinates:
                 f.write(f"{x},{y}\n")
         num_lines = len(coordinates)
-        print(f"Coordinate salvate in {self.coordinate_path}")
         return num_lines
 
     def save_velocities(self, velocities):
@@ -94,7 +90,6 @@ class MouseCoordinate:
                     velocity = distance / elapsed_time
                     f.write(f"{velocity}\n")
         num_lines = len(velocities)
-        print(f"Velocità salvate in {self.velocita_path}")
         return num_lines
 
     def check_files(self, coordinates_length, velocities_length):
@@ -102,17 +97,14 @@ class MouseCoordinate:
         Controlla se i file delle coordinate e delle velocità hanno lo stesso numero di righe
         nel caso contrario cancella le righe di troppo
         """
-        print(f'coordinate totali : {coordinates_length} velocita totali :{velocities_length}')
         if coordinates_length == velocities_length:
             return True
         elif coordinates_length > velocities_length:
             quantita_righe = coordinates_length - velocities_length
             self.cancella_righe_di_troppo(self.coordinate_path, quantita_righe)
-            #self.aggiungi_righe_mancanti("V", quantita_righe)
         else:
             quantita_righe = velocities_length - coordinates_length
             self.cancella_righe_di_troppo(self.velocita_path, quantita_righe)
-            #self.aggiungi_righe_mancanti("C", quantita_righe)
     
     def cancella_righe_di_troppo(self, file_to_open, righe_to_delete):
        

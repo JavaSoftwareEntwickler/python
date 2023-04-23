@@ -180,10 +180,13 @@ class App(tk.Tk):
 
     def read_velocities(self, lista_velocita, num_velocities):
         # Si assicura che ci siano abbastanza velocità
+        print(lista_velocita)
         if len(lista_velocita) < num_velocities:
             raise ValueError("Not enough velocities in file")
         # Converte le tuple di stringhe in float
-        return [float() for v in lista_velocita[:num_velocities][:num_velocities]]
+        return [(float(v[0]), float(v[1]), float(v[2])) for v in lista_velocita[:num_velocities]]
+
+        # return [float() for v in lista_velocita[:num_velocities][:num_velocities]]
     
 
 
@@ -192,18 +195,11 @@ class App(tk.Tk):
         Metodo che muove il cursore del mouse a tutte le coordinate nella lista coordinates.
         Se la variabile is_movement_user_active è True, interrompe il movimento.
         """
-        print("#############sottole coordinate################") 
-        print(type(coordinate))
-        print(coordinate)
-        print(type(coordinate[0]))
-        print(f'coordinata di 0 : {coordinate[0]}')
-        print("#############sotto le velocita################") 
-        print(type(velocita))        
-        print(velocita)
+
         for i, (x, y) in enumerate(coordinate):
             if self.is_movement_user_active:
                 break
-            pyautogui.moveTo(x, y, duration = velocita[i] / 100)
+            pyautogui.moveTo(x, y, duration = velocita[i][2] / 100)
             
     
     def get_movement_names(self):

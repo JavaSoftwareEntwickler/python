@@ -22,7 +22,6 @@ class FileManager:
         if not os.path.isfile(movements_file):
             with open(movements_file, 'w') as f:
                 f.write('')
-            print(f"Il file {filename} è stato creato in {os.getcwd()}/assets/")
 
     def add_current_folder_to_path(self):
         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
