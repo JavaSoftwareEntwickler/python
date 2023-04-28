@@ -45,6 +45,12 @@ class App(tk.Tk):
         # self.btn_random.pack(pady=10)
         self.variable = tk.StringVar(self)
         self.variable.set("Seleziona movimento")
+        self.nome_file_movimenti = "nome_movimenti_mouse.txt";
+        self.movimenti=MovementNameFileHandler(self.nome_file_movimenti)
+        
+        self.path_nome_movimenti = self.movimenti.get_path_file_name();
+        
+        print(self.path_nome_movimenti)
         self.drop_down = tk.OptionMenu(self, self.variable, *self.get_movement_names())
         self.drop_down.place(x=10, y=90)
         
@@ -92,13 +98,12 @@ class App(tk.Tk):
     def run(self):
         
         # Esegue il ciclo principale del programma
-        movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
         
         if self.is_creating_movement:
             while True:       
                 nome_movimento = input("Inserisci il nome del movimento: ")
-                if movement.is_movement_name_available(nome_movimento):
-                    movement.add_movement_name(nome_movimento)
+                if self.movimenti.is_movement_name_available(nome_movimento):
+                    self.movimenti.add_movement_name(nome_movimento)
                     break
                 else:
                     print("Il nome del movimento è già presente nel file. Riprova.")
@@ -203,8 +208,13 @@ class App(tk.Tk):
             
     
     def get_movement_names(self):
-        #leggo il file
-        nomi_movimenti = ["cerchi","infinito"]
+        #leggo il file "C:\Users\march\OneDrive\Desktop\script_python\sempre_attivo\assets\nome_movimenti_mouse.txt"
+        print(self.path_nome_movimenti)
+        f = open(self.path_nome_movimenti, 'r')
+        nomi_movimenti=f.readlines() 
+        #nomi_movimenti = ["ssss","ddddd"]
+        if len(nomi_movimenti) <= 0:
+            nomi_movimenti.append("nessun_movimento")
         return nomi_movimenti
 
        
