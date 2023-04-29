@@ -21,7 +21,7 @@ class App(tk.Tk):
         fm.clean__pycache__only_for_develop()
         fm.create_assets_folder()
         fm.create_coordinate_velocita_folders()
-        fm.create_name_movements_file()
+        self.path_nome_movimenti = fm.create_name_movements_file()
         fm.add_current_folder_to_path()
         
         # Inizializzazione della finestra grafica
@@ -45,14 +45,10 @@ class App(tk.Tk):
         # self.btn_random.pack(pady=10)
         self.variable = tk.StringVar(self)
         self.variable.set("Seleziona movimento")
-        self.nome_file_movimenti = "nome_movimenti_mouse.txt";
-        self.movimenti=MovementNameFileHandler(self.nome_file_movimenti)
-        
-        self.path_nome_movimenti = self.movimenti.get_path_file_name();
-        
-        print(self.path_nome_movimenti)
         self.drop_down = tk.OptionMenu(self, self.variable, *self.get_movement_names())
         self.drop_down.place(x=10, y=90)
+        # Aggiungi il comando di tracciamento alla variabile self.variable
+
         
         # Inizializzazione delle variabili di stato
         self.is_creating_movement = False
@@ -98,21 +94,24 @@ class App(tk.Tk):
     def run(self):
         
         # Esegue il ciclo principale del programma
-        
+        movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
         if self.is_creating_movement:
             while True:       
                 nome_movimento = input("Inserisci il nome del movimento: ")
-                if self.movimenti.is_movement_name_available(nome_movimento):
-                    self.movimenti.add_movement_name(nome_movimento)
+                if movement.is_movement_name_available(nome_movimento):
+                    movement.add_movement_name(nome_movimento)
+                    self.variable.trace("w", self.update_dropdown_options)
+                    self.update_dropdown_options()
                     break
                 else:
                     print("Il nome del movimento è già presente nel file. Riprova.")
             #passi il nome del movimento
             mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", nome_movimento) 
-            coordinates, velocities = mc.get_coordinates_and_velocities()            
-            quantita_coordinate = mc.save_coordinates(coordinates)
-            quantita_velocita = mc.save_velocities(velocities)
-            mc.check_files(quantita_coordinate, quantita_velocita)
+            coordinatee, velocita = mc.get_coordinates_and_velocities()            
+            quantita_coordinate = mc.save_coordinates(coordinatee)
+            quantita_velocita = mc.save_velocities(velocita)
+            coordinates, velocities = mc.get_movement_file()
+            mc.check_files(len(coordinates), len(velocities))
             
             
         elif self.is_reading_movement:
@@ -122,8 +121,10 @@ class App(tk.Tk):
             
             
             #passi il nome del movimento
-            mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", nome_movimento)
+            mc = MouseCoordinate(10, "coordinate.txt", "velocita.txt", nome_movimento.strip())
             coordinates, velocities = mc.get_movement_file()
+            print(len(velocities))
+            print(len(coordinates))
             mc.check_files(len(coordinates), len(velocities))
             
             
@@ -131,6 +132,7 @@ class App(tk.Tk):
         while self.is_running:
             if self.check_timeout():
                 velocitiesReaded = self.read_velocities(velocities, len(coordinates))
+                print(velocitiesReaded)
                 self.move_to_coordinates(coordinates, velocitiesReaded)
             time.sleep(1)
                 
@@ -186,10 +188,12 @@ class App(tk.Tk):
     def read_velocities(self, lista_velocita, num_velocities):
         # Si assicura che ci siano abbastanza velocità
         print(lista_velocita)
-        if len(lista_velocita) < num_velocities:
-            raise ValueError("Not enough velocities in file")
+        #if len(lista_velocita) < num_velocities:
+            #raise ValueError("Not enough velocities in file")
         # Converte le tuple di stringhe in float
-        return [(float(v[0]), float(v[1]), float(v[2])) for v in lista_velocita[:num_velocities]]
+        return [float(v[0]) for v in lista_velocita[:num_velocities]]
+        #return [((float(v[0])), float(v[1]), float(v[2])) for v in lista_velocita[:num_velocities]]
+
 
         # return [float() for v in lista_velocita[:num_velocities][:num_velocities]]
     
@@ -204,7 +208,8 @@ class App(tk.Tk):
         for i, (x, y) in enumerate(coordinate):
             if self.is_movement_user_active:
                 break
-            pyautogui.moveTo(x, y, duration = velocita[i][2] / 100)
+            #pyautogui.moveTo(x, y, duration = velocita[i][2] / 100)
+            pyautogui.moveTo(x, y, duration = velocita[i] / 100)
             
     
     def get_movement_names(self):
@@ -214,8 +219,16 @@ class App(tk.Tk):
         nomi_movimenti=f.readlines() 
         #nomi_movimenti = ["ssss","ddddd"]
         if len(nomi_movimenti) <= 0:
-            nomi_movimenti.append("nessun_movimento")
+            nomi_movimenti.append("nessun_movimento_ancora_caricato")
         return nomi_movimenti
+    
+    def update_dropdown_options(self, *args):
+        # Leggi il file di testo e aggiorna le opzioni del menù a discesa
+        options = self.get_movement_names()
+        menu = self.drop_down["menu"]
+        menu.delete(0, "end")
+        for option in options:
+            menu.add_command(label=option, command=lambda value=option: self.variable.set(value))
 
        
 if __name__ == '__main__':
