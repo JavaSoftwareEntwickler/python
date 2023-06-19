@@ -18,7 +18,7 @@ class App(tk.Tk):
         sys.path.append(path_attuale)
         
         fm = FileManager()
-        fm.clean__pycache__only_for_develop()
+        #fm.clean__pycache__only_for_develop()
         fm.create_assets_folder()
         fm.create_coordinate_velocita_folders()
         self.path_nome_movimenti = fm.create_name_movements_file()
@@ -26,12 +26,21 @@ class App(tk.Tk):
         
         # Inizializzazione della finestra grafica
         self.title("Start/Stop Program")
-        self.geometry("220x150")
+        self.geometry("440x150")
         
         # Creazione dei pulsanti e loro disposizione
-        self.btn_start = tk.Button(self, text="Crea", command=self.start)
+        self.btn_start = tk.Button(self, text="Crea", command=self.start, state=tk.DISABLED)
         #self.btn_start.pack(pady=10)
-        self.btn_start.place(x=10, y=10)
+        self.btn_start.place(x=160, y=50)
+        
+        # Nuovo pulsante e campo di input per il nome del movimento
+        self.variabile_nome_movimento = tk.StringVar(self)
+        self.entry_movement_name = tk.Entry(self, state=tk.NORMAL, textvariable=self.variabile_nome_movimento)
+
+        
+        self.entry_movement_name.place(x=180, y=90)
+        self.btn_confirm = tk.Button(self, text="Conferma", command=self.start, state=tk.NORMAL)
+        self.btn_confirm.place(x=350, y=90)
         
         self.btn_stop = tk.Button(self, text="Stop", command=self.stop, state=tk.DISABLED)
         #self.btn_stop.pack(pady=10)
@@ -40,14 +49,19 @@ class App(tk.Tk):
         self.btn_read_movement = tk.Button(self, text="Leggi Movimento", command=self.read_movement)
         self.btn_read_movement.place(x=10, y=50)
         
-
         # self.btn_random = tk.Button(self, text="Random Move", command=self.move_random, state=tk.DISABLED)
         # self.btn_random.pack(pady=10)
         self.variable = tk.StringVar(self)
         self.variable.set("Seleziona movimento")
         self.drop_down = tk.OptionMenu(self, self.variable, *self.get_movement_names())
         self.drop_down.place(x=10, y=90)
-        # Aggiungi il comando di tracciamento alla variabile self.variable
+
+        # Variabile di controllo per il dropdown
+        self.is_dropdown_selected = tk.BooleanVar(self)
+        self.is_dropdown_selected.set(False)
+
+        # Collega una funzione al cambio di selezione del dropdown
+        self.variable.trace("w", self.update_dropdown_selection)
 
         
         # Inizializzazione delle variabili di stato
@@ -59,15 +73,8 @@ class App(tk.Tk):
         self.keyboard_listener = None
         self.last_active_time = time.time()
         self.is_movement_user_active = False
-
-    def start(self):
-        # Avvia il programma
-        self.is_creating_movement = True
-        self.is_running = True
-        self.btn_start.config(state=tk.DISABLED)
-        self.drop_down.config(state=tk.DISABLED)
-        self.btn_stop.config(state=tk.NORMAL)
-        # self.btn_random.config(state=tk.NORMAL)
+    
+    def starting_thread(self):
         self.btn_read_movement.config(state=tk.DISABLED)        
         self.mouse_listener = mouse.Listener(on_move=self.on_move)
         self.keyboard_listener = keyboard.Listener(on_press=self.on_press)
@@ -75,6 +82,16 @@ class App(tk.Tk):
         self.keyboard_listener.start()
         self.thread = threading.Thread(target=self.run)
         self.thread.start()
+
+    def start(self):
+        # Avvia il programma
+        self.is_creating_movement = False
+        self.is_running = True
+        self.btn_start.config(state=tk.DISABLED)
+        self.drop_down.config(state=tk.DISABLED)
+        self.btn_stop.config(state=tk.NORMAL)
+        # self.btn_random.config(state=tk.NORMAL)
+        self.starting_thread()
         
     def read_movement(self):
         # Avvia il programma
@@ -83,21 +100,34 @@ class App(tk.Tk):
         self.btn_read_movement.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
         # self.btn_random.config(state=tk.NORMAL)
-        self.btn_read_movement.config(state=tk.DISABLED)        
-        self.mouse_listener = mouse.Listener(on_move=self.on_move)
-        self.keyboard_listener = keyboard.Listener(on_press=self.on_press)
-        self.mouse_listener.start()
-        self.keyboard_listener.start()
-        self.thread = threading.Thread(target=self.run)
-        self.thread.start()
+        self.starting_thread()
+        
+    def conferma_nome_movimento(self):
+        return self.variabile_nome_movimento.get()
+    
+    def check_entry_value(self, *args):
+        print(self.variabile_nome_movimento.get())
+        if not self.variabile_nome_movimento.get():
+            self.btn_confirm.config(state=tk.DISABLED)
+        else:
+            self.btn_confirm.config(state=tk.NORMAL)
+
 
     def run(self):
         
         # Esegue il ciclo principale del programma
         movement = MovementNameFileHandler("nome_movimenti_mouse.txt")
+        self.update_dropdown_selection(self.is_dropdown_selected)
+
+
         if self.is_creating_movement:
-            while True:       
-                nome_movimento = input("Inserisci il nome del movimento: ")
+            while True:
+                # valorizzare nome_movimento non da input ma da ciò che scrive l'utente 
+                # nell entry_movement_name . l'utente scrive il valore in entry_movement_name e poi preme conferma.
+                
+                self.check_entry_value()
+                nome_movimento = self.conferma_nome_movimento()
+                print(nome_movimento)
                 if movement.is_movement_name_available(nome_movimento):
                     movement.add_movement_name(nome_movimento)
                     self.variable.trace("w", self.update_dropdown_options)
@@ -145,6 +175,7 @@ class App(tk.Tk):
         self.is_reading_movement = False
         self.btn_start.config(state=tk.NORMAL)
         self.btn_read_movement.config(state=tk.NORMAL)
+        self.btn_confirm.config(state=tk.NORMAL)
         self.drop_down.config(state=tk.NORMAL)
         self.btn_stop.config(state=tk.DISABLED)
         
@@ -152,6 +183,7 @@ class App(tk.Tk):
         self.mouse_listener.stop()
         self.keyboard_listener.stop()
         self.thread.join()
+        self.variable.set("Seleziona movimento")
 
     def on_move(self, x, y):
         """ 
@@ -177,7 +209,7 @@ class App(tk.Tk):
         Altrimenti, imposta la variabile is_movement_user_active a True e restituisce False.
         """
         time_since_last_active = time.time() - self.last_active_time
-        if time_since_last_active > 10:
+        if time_since_last_active > 30:
             self.is_movement_user_active = False
             return True
         else:
@@ -213,7 +245,7 @@ class App(tk.Tk):
             
     
     def get_movement_names(self):
-        #leggo il file "C:\Users\march\OneDrive\Desktop\script_python\sempre_attivo\assets\nome_movimenti_mouse.txt"
+        #leggo il file "C:\programmi\script_python\sempre_attivo\assets\nome_movimenti_mouse.txt"
         print(self.path_nome_movimenti)
         f = open(self.path_nome_movimenti, 'r')
         nomi_movimenti=f.readlines() 
@@ -229,6 +261,23 @@ class App(tk.Tk):
         menu.delete(0, "end")
         for option in options:
             menu.add_command(label=option, command=lambda value=option: self.variable.set(value))
+    
+    def update_dropdown_selection(self, *args):
+        if self.variable.get() != "Seleziona movimento":
+            self.is_dropdown_selected.set(True)
+        else:
+            self.is_dropdown_selected.set(False)
+            
+        if self.is_dropdown_selected.get():
+            self.btn_confirm.config(state=tk.DISABLED)
+            self.btn_read_movement.config(state=tk.NORMAL)
+            self.is_creating_movement=False
+            self.is_reading_movement=True
+        else :
+            self.btn_confirm.config(state=tk.NORMAL)
+            self.btn_read_movement.config(state=tk.DISABLED)
+            self.is_creating_movement=True
+            self.is_reading_movement=False
 
        
 if __name__ == '__main__':

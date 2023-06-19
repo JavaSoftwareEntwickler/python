@@ -28,7 +28,7 @@ class FileManager:
         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     
     def clean__pycache__only_for_develop(self):
-        cartella = 'C:\\Users\\march\\OneDrive\\Desktop\\script_python\\sempre_attivo\\inattivo\\__pycache__\\'
+        cartella = 'C:\\programmi\\script_python\\sempre_attivo\\inattivo\\__pycache__\\'
         # Cancella tutto nella cartella
         shutil.rmtree(cartella)
 
